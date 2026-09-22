@@ -1,0 +1,19 @@
+{
+  "annualGoals": [
+    {
+      "title": "範例：常年訓練精實計畫",
+      "period": "2026年1月 - 2026年12月",
+      "status": "ongoing",
+      "description": "請修改此區塊內容為貴總隊實際之年度重點工作計畫說明。"
+    }
+  ],
+  "announcements": [
+    {
+      "title": "範例：115年度義消常年訓練實施計畫公告",
+      "date": "2026-03-15",
+      "status": "upcoming",
+      "description": "這是一筆範例公告，請於 data/plans.json 內修改或新增您實際的活動公告內容。",
+      "link": ""
+    }
+  ]
+}

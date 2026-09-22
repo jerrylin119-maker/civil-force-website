@@ -1,0 +1,9 @@
+[
+  {
+    "id": "sample-01",
+    "title": "範例：115年度常年訓練活動",
+    "date": "2026-03-15",
+    "description": "這是一筆範例資料，請修改或刪除。將 driveFolderId 換成您自己 Google 雲端硬碟相簿資料夾的 ID，即可自動顯示該資料夾內所有相片。",
+    "driveFolderId": ""
+  }
+]
