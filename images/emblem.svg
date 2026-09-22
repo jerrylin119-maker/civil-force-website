@@ -1,0 +1,26 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="義消總隊徽章">
+  <defs>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3cf6b"/>
+      <stop offset="1" stop-color="#b8860b"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#b91c1c"/>
+      <stop offset="0.55" stop-color="#e0662b"/>
+      <stop offset="1" stop-color="#f4c542"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="60" cy="60" r="57" fill="#0f2159"/>
+  <circle cx="60" cy="60" r="57" fill="none" stroke="url(#ring)" stroke-width="3"/>
+
+  <g fill="#b91c1c" stroke="#f3cf6b" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M60,60 L40,34 Q35,30 40,24 L50,10 L60,20 L70,10 L80,24 Q85,30 80,34 Z"/>
+    <path d="M60,60 L86,40 Q90,35 96,40 L110,50 L100,60 L110,70 L96,80 Q90,85 86,80 Z"/>
+    <path d="M60,60 L80,86 Q85,90 80,96 L70,110 L60,100 L50,110 L40,96 Q35,90 40,86 Z"/>
+    <path d="M60,60 L34,80 Q30,85 24,80 L10,70 L20,60 L10,50 L24,40 Q30,35 34,40 Z"/>
+  </g>
+
+  <circle cx="60" cy="60" r="19" fill="#0f2159" stroke="url(#ring)" stroke-width="2"/>
+  <path d="M60,48 C55,54 52,58 52,63 C52,68.5 55.6,72 60,72 C64.4,72 68,68.5 68,63 C68,60 66.5,57.5 64.5,55.5 C64.7,58 63.6,59.6 62,60.5 C62.6,57 61.6,52.5 60,48 Z" fill="url(#flame)"/>
+</svg>
