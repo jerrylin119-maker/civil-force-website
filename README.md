@@ -1,10 +1,11 @@
 # 臺東縣消防局義消總隊 官方網站
 
-純 HTML / CSS / JavaScript 靜態網站，無需伺服器端程式，包含三大頁面：
+純 HTML / CSS / JavaScript 靜態網站，無需伺服器端程式，包含四個頁面：
 
 - `index.html`　首頁 / 組織介紹（沿革、組織架構、聯絡方式）
 - `plans.html`　年度計畫及活動公布
 - `gallery.html`　活動花絮（直接串接 Google 雲端硬碟資料夾相片）
+- `admin.html`　**同仁後台**：不用編輯 JSON，直接在網頁上填表單新增活動花絮（需先完成下方「後台設定」）
 
 ## 檔案結構
 
@@ -13,11 +14,17 @@ civil_force_website/
 ├── index.html
 ├── plans.html
 ├── gallery.html
+├── admin.html            # 同仁後台表單頁面
+├── admin/
+│   └── apps-script.gs    # 貼到 Google Apps Script 的後台程式碼
 ├── css/style.css
-├── js/main.js
+├── js/
+│   ├── config.js         # 後台網址、通關密語設定
+│   ├── main.js
+│   └── admin.js
 ├── data/
 │   ├── plans.json       # 年度計畫、活動公告內容
-│   └── activities.json  # 活動花絮清單（含 Google Drive 資料夾 ID）
+│   └── activities.json  # 活動花絮清單（未設定後台試算表時使用的預設資料來源）
 └── images/
 ```
 
@@ -38,7 +45,7 @@ python -m http.server 8000
 | --- | --- |
 | 組織介紹文字、沿革、組織架構、聯絡方式 | `index.html`（直接找對應文字修改） |
 | 年度重點工作計畫、活動公告 | `data/plans.json` |
-| 活動花絮相簿清單 | `data/activities.json` |
+| 活動花絮相簿清單 | 完成「後台設定」後可直接用 `admin.html` 表單新增，或手動編輯 `data/activities.json` |
 | 網站配色、版面 | `css/style.css` |
 
 `data/plans.json` 範例：
@@ -97,12 +104,40 @@ python -m http.server 8000
 
 ### 之後新增活動花絮
 
-以後每次辦完活動，只需要：
+**方法一：用同仁後台表單（推薦，完成下方「後台設定」後可用）**
+
+1. 在 Google 雲端硬碟新增一個資料夾、上傳相片、設定「知道連結者可檢視」。
+2. 開啟 `admin.html`，輸入通關密語，填寫活動名稱／日期／說明／雲端硬碟資料夾連結後送出。
+3. 承辦人到 Google 試算表把該筆資料的 `status` 欄從 `pending` 改成 `published`，活動花絮頁面就會自動顯示（約數秒內生效，重新整理頁面即可看到）。
+
+**方法二：手動編輯 JSON（不需額外設定，適合網站管理者自己維護）**
 
 1. 在 Google 雲端硬碟新增一個資料夾、上傳相片、設定「知道連結者可檢視」。
 2. 在 `data/activities.json` 多加一筆物件（複製既有格式，換掉標題、日期、說明、資料夾 ID）。
 
-不需要修改任何 HTML / CSS / JS 程式碼。
+兩種方法都不需要修改任何 HTML / CSS / JS 程式碼。
+
+## 後台設定（讓同仁可直接在網頁上新增活動，不用編輯程式檔）
+
+後台採用「Google 試算表 + Apps Script」架構：同仁在 `admin.html` 填表單送出後，資料會寫進您自己的 Google 試算表；`gallery.html` 則改成讀取該試算表已核准的活動。**完全不需要租用伺服器，全程免費**，但需要您（或熟悉 Google 試算表的同仁）花約 10 分鐘做一次性設定：
+
+1. **建立 Google 試算表**：到 [Google 試算表](https://sheets.google.com) 新增一份空白試算表，例如命名「義消總隊活動花絮後台」。
+2. **貼上後台程式碼**：試算表選單「擴充功能 → Apps Script」，把本專案 `admin/apps-script.gs` 的內容整份貼進去（覆蓋預設的 `Code.gs` 內容），按儲存（磁片圖示）。
+3. **設定通關密語**：
+   - 在 `apps-script.gs` 開頭的 `EXPECTED_PIN` 改成您要的密語。
+   - 同步修改本專案 `js/config.js` 裡的 `ADMIN_PIN`，兩邊必須完全一致。
+4. **部署為網頁應用程式**：Apps Script 編輯器右上角「部署 → 新增部署作業」：
+   - 類型選「網頁應用程式」
+   - 執行身分：我（您的帳號）
+   - 誰可以存取：**任何人**
+   - 按「部署」，過程中會跳出 Google 帳號授權畫面，選擇您的帳號並允許權限。
+   - 完成後會得到一組網址，長得像 `https://script.google.com/macros/s/AKfycb.../exec`，複製起來。
+5. **把網址填進網站設定**：打開 `js/config.js`，把剛複製的網址貼到 `SHEET_API_URL`。
+6. 重新整理 `admin.html` 與 `gallery.html`，即可開始使用。表單送出的新活動預設狀態是 `pending`（審核中），需要您到試算表手動把該列的 `status` 改成 `published`，才會出現在公開的活動花絮頁面——這是刻意設計的審核機制，避免同仁誤填資料直接曝光。
+
+> 💡 之後如果要更新後台程式邏輯，只要修改 Apps Script 裡的程式碼後重新「管理部署作業 → 編輯 → 部署」即可，網址不會變動。
+>
+> ⚠️ `admin.html` 的通關密語只是給同仁使用上的一層基本防護，並非嚴謹的帳號權限系統；請勿把 `admin.html` 的連結放在公開導覽列或對外公告，僅私下告知需要使用後台的同仁即可。
 
 ## 部署到網路上（免費，任何人皆可瀏覽）
 

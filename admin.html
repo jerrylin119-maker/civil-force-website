@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>新增活動花絮｜臺東縣消防局義消總隊</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" href="images/emblem.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <span>臺東縣消防局義消總隊 官方網站</span>
+    <span>內部後台頁面，請勿轉發連結</span>
+  </div>
+</div>
+<div class="hazard-strip"></div>
+
+<header class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand">
+      <div class="emblem"><img src="images/emblem.png" alt="義消總隊徽章" /></div>
+      <div class="brand-text">
+        <h1>臺東縣消防局義消總隊</h1>
+        <span>VOLUNTEER FIRE CORPS</span>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="開啟選單">☰</button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html">首頁 / 組織介紹</a></li>
+        <li><a href="plans.html">年度計畫及活動公布</a></li>
+        <li><a href="gallery.html">活動花絮</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="page-header">
+  <img class="emblem-watermark" src="images/emblem.png" alt="" aria-hidden="true" />
+  <div class="container">
+    <h2>新增活動花絮</h2>
+    <p>同仁專用後台，送出後將由承辦人審核後才會顯示於公開的活動花絮頁面</p>
+  </div>
+</div>
+
+<section class="block">
+  <div class="container" style="max-width:640px;">
+
+    <div id="admin-not-configured" class="empty-note" style="display:none;">
+      ⚠️ 尚未設定後台試算表網址（<code>js/config.js</code> 的 <code>SHEET_API_URL</code>），
+      此表單目前無法送出資料。請先依 <code>README.md</code>「後台設定」章節完成 Google Apps Script 部署。
+    </div>
+
+    <div id="pin-gate" class="card">
+      <h4>🔒 請輸入同仁通關密語</h4>
+      <p style="color:var(--text-muted); font-size:0.9rem;">密語請向承辦人索取，僅限本總隊同仁使用本頁面。</p>
+      <input id="pin-input" type="password" placeholder="請輸入通關密語" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin:10px 0;" />
+      <button id="pin-submit" class="btn btn-ghost" style="width:100%;">進入後台</button>
+      <p id="pin-error" style="color:var(--red); font-size:0.85rem; display:none;">密語錯誤，請再試一次。</p>
+    </div>
+
+    <form id="activity-form" class="card" style="display:none;">
+      <h4>📷 填寫活動花絮資料</h4>
+
+      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動名稱 *</label>
+      <input id="f-title" type="text" required placeholder="例：115年度春季常年訓練" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+
+      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動日期 *</label>
+      <input id="f-date" type="date" required style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+
+      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動說明</label>
+      <textarea id="f-description" rows="4" placeholder="簡短說明這場活動的內容" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px; font-family:inherit;"></textarea>
+
+      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">Google 雲端硬碟資料夾連結 *</label>
+      <input id="f-folder" type="text" required placeholder="https://drive.google.com/drive/folders/....." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+      <p style="color:var(--text-muted); font-size:0.82rem; margin-top:6px;">
+        請先在 Google 雲端硬碟建立資料夾、上傳相片，並將分享權限設為「知道連結的任何人 / 檢視者」，再把資料夾連結貼在這裡。
+      </p>
+
+      <button id="f-submit" type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">送出活動花絮</button>
+      <p id="f-status" style="margin-top:12px; font-size:0.9rem;"></p>
+    </form>
+
+  </div>
+</section>
+
+<div class="hazard-strip"></div>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">© 2026 臺東縣消防局義消總隊。內部後台頁面。</div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

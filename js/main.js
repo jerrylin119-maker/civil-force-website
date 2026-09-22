@@ -44,6 +44,16 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
+/* ---------- 從完整網址或純 ID 取出 Google 雲端硬碟資料夾 ID ---------- */
+function extractDriveFolderId(input) {
+  if (!input) return "";
+  const trimmed = input.trim();
+  const match = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  const idMatch = trimmed.match(/^[a-zA-Z0-9_-]{10,}$/);
+  return idMatch ? trimmed : "";
+}
+
 const STATUS_LABEL = {
   upcoming: "即將舉行",
   ongoing: "辦理中",
@@ -121,17 +131,27 @@ function renderAnnouncements(container, items) {
 
 /* ===================================================================
    活動花絮 (gallery.html) — 串接 Google 雲端硬碟資料夾
+   資料來源：已設定 SHEET_API_URL（js/config.js）時讀取 Google 試算表後台，
+   否則退回讀取本機 data/activities.json。
    =================================================================== */
 async function loadGalleryData() {
   const listEl = document.getElementById("gallery-list");
+  const apiUrl = (typeof SHEET_API_URL !== "undefined" && SHEET_API_URL) ? SHEET_API_URL : "";
   try {
-    const res = await fetch("data/activities.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("無法載入 activities.json");
-    const data = await res.json();
+    let data;
+    if (apiUrl) {
+      const res = await fetch(apiUrl, { cache: "no-store" });
+      if (!res.ok) throw new Error("無法載入後台試算表資料");
+      data = await res.json();
+    } else {
+      const res = await fetch("data/activities.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("無法載入 activities.json");
+      data = await res.json();
+    }
     renderGallery(listEl, data || []);
   } catch (err) {
     console.error(err);
-    listEl.innerHTML = `<div class="empty-note">⚠️ 活動花絮資料載入失敗，請確認 data/activities.json 是否存在且格式正確。</div>`;
+    listEl.innerHTML = `<div class="empty-note">⚠️ 活動花絮資料載入失敗，請確認資料來源設定是否正確。</div>`;
   }
 }
 
