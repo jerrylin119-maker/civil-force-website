@@ -62,8 +62,18 @@
       <p id="pin-error" style="color:var(--red); font-size:0.85rem; display:none;">密語錯誤，請再試一次。</p>
     </div>
 
+    <div id="activity-list-wrap" style="display:none; margin-bottom:20px;">
+      <div class="card">
+        <h4>📋 現有活動花絮（點「編輯」可修改連結或內容）</h4>
+        <div id="activity-list" style="margin-top:12px;">
+          <p style="color:var(--text-muted); font-size:0.9rem;">載入中...</p>
+        </div>
+      </div>
+    </div>
+
     <form id="activity-form" class="card" style="display:none;">
-      <h4>📷 填寫活動花絮資料</h4>
+      <h4 id="form-title">📷 新增活動花絮資料</h4>
+      <input type="hidden" id="f-id" value="" />
 
       <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動名稱 *</label>
       <input id="f-title" type="text" required placeholder="例：115年度春季常年訓練" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
@@ -80,7 +90,10 @@
         請先在 Google 雲端硬碟建立資料夾、上傳相片，並將分享權限設為「知道連結的任何人 / 檢視者」，再把資料夾連結貼在這裡。
       </p>
 
-      <button id="f-submit" type="submit" class="btn btn-primary" style="width:100%; margin-top:20px;">送出活動花絮</button>
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button id="f-submit" type="submit" class="btn btn-primary" style="flex:1;">送出活動花絮</button>
+        <button id="f-cancel-edit" type="button" class="btn btn-ghost" style="display:none;">取消編輯</button>
+      </div>
       <p id="f-status" style="margin-top:12px; font-size:0.9rem;"></p>
     </form>
 
