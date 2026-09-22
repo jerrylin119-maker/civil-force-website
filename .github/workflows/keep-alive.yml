@@ -14,5 +14,5 @@ jobs:
     steps:
       - name: Ping Apps Script Web App
         run: |
-          curl -s -o /dev/null -w "HTTP status: %{http_code}\n" \
+          curl -sL -o /dev/null -w "HTTP status: %{http_code}\n" \
             "https://script.google.com/macros/s/AKfycbxZoOEV3cSHG5agwsMQIuw_DhNxgs5TiG_X2EiPIzUi-ddvvbgoDX4Hxy6pUeuL6EwJQg/exec"
