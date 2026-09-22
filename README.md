@@ -108,7 +108,9 @@ python -m http.server 8000
 
 1. 在 Google 雲端硬碟新增一個資料夾、上傳相片、設定「知道連結者可檢視」。
 2. 開啟 `admin.html`，輸入通關密語，填寫活動名稱／日期／說明／雲端硬碟資料夾連結後送出。
-3. 承辦人到 Google 試算表把該筆資料的 `status` 欄從 `pending` 改成 `published`，活動花絮頁面就會自動顯示（約數秒內生效，重新整理頁面即可看到）。
+3. 送出後會直接設為 `published`，活動花絮頁面立即顯示（約數秒內生效，重新整理頁面即可看到），不需要另外到試算表核准。
+
+**送錯資料要怎麼改？** 直接打開您的 Google 試算表「活動花絮」分頁，找到那一列，把 `title`／`date`／`description`／`driveFolderId` 任一欄位改成正確內容即可，存檔後活動花絮頁面下次讀取就會是新的內容，不需要重新部署網站。要整筆刪除的話，直接刪除該列，或把 `status` 改成非 `published` 的值（例如 `hidden`）讓它暫時不顯示。
 
 **方法二：手動編輯 JSON（不需額外設定，適合網站管理者自己維護）**
 
@@ -119,7 +121,7 @@ python -m http.server 8000
 
 ## 後台設定（讓同仁可直接在網頁上新增活動，不用編輯程式檔）
 
-後台採用「Google 試算表 + Apps Script」架構：同仁在 `admin.html` 填表單送出後，資料會寫進您自己的 Google 試算表；`gallery.html` 則改成讀取該試算表已核准的活動。**完全不需要租用伺服器，全程免費**，但需要您（或熟悉 Google 試算表的同仁）花約 10 分鐘做一次性設定：
+後台採用「Google 試算表 + Apps Script」架構：同仁在 `admin.html` 填表單送出後，資料會直接寫進您自己的 Google 試算表並設為公開；`gallery.html` 則讀取該試算表裡狀態為 `published` 的活動。**完全不需要租用伺服器，全程免費**，但需要您（或熟悉 Google 試算表的同仁）花約 10 分鐘做一次性設定：
 
 1. **建立 Google 試算表**：到 [Google 試算表](https://sheets.google.com) 新增一份空白試算表，例如命名「義消總隊活動花絮後台」。
 2. **貼上後台程式碼**：試算表選單「擴充功能 → Apps Script」，把本專案 `admin/apps-script.gs` 的內容整份貼進去（覆蓋預設的 `Code.gs` 內容），按儲存（磁片圖示）。
@@ -133,7 +135,7 @@ python -m http.server 8000
    - 按「部署」，過程中會跳出 Google 帳號授權畫面，選擇您的帳號並允許權限。
    - 完成後會得到一組網址，長得像 `https://script.google.com/macros/s/AKfycb.../exec`，複製起來。
 5. **把網址填進網站設定**：打開 `js/config.js`，把剛複製的網址貼到 `SHEET_API_URL`。
-6. 重新整理 `admin.html` 與 `gallery.html`，即可開始使用。表單送出的新活動預設狀態是 `pending`（審核中），需要您到試算表手動把該列的 `status` 改成 `published`，才會出現在公開的活動花絮頁面——這是刻意設計的審核機制，避免同仁誤填資料直接曝光。
+6. 重新整理 `admin.html` 與 `gallery.html`，即可開始使用。表單送出的新活動會直接設為 `published`，立即出現在公開的活動花絮頁面——因為表單本身已有通關密語把關，這裡就不再另外設計人工審核步驟。若您日後想改回「需人工核准才公開」，把 `admin/apps-script.gs` 的 `doPost` 裡 `"published"` 改回 `"pending"` 並重新部署即可，`doGet` 只回傳 `published` 的邏輯不用改。
 
 > 💡 之後如果要更新後台程式邏輯，只要修改 Apps Script 裡的程式碼後重新「管理部署作業 → 編輯 → 部署」即可，網址不會變動。
 >

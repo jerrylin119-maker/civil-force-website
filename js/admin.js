@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await res.json();
       if (result.ok) {
         statusEl.style.color = "#166534";
-        statusEl.textContent = "✅ 已送出！將由承辦人審核後顯示於活動花絮頁面。";
+        statusEl.textContent = "✅ 已送出並發布，活動花絮頁面將立即顯示！";
         form.reset();
       } else {
         statusEl.style.color = "var(--red)";

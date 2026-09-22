@@ -2,9 +2,10 @@
  * 活動花絮後台 — Google Apps Script
  *
  * 用途：
- *   - doGet  提供「活動花絮」頁面讀取已核准(published)的活動清單 (JSON)
- *   - doPost 接收 admin.html 表單送出的新活動，寫入試算表（預設狀態為 pending，
- *            需要承辦人手動把該列的 status 改成 published 才會公開顯示）
+ *   - doGet  提供「活動花絮」頁面讀取已發布(published)的活動清單 (JSON)
+ *   - doPost 接收 admin.html 表單送出的新活動，寫入試算表並直接設為
+ *            published，立即顯示在公開的活動花絮頁面（表單本身已有
+ *            通關密語把關，故不再另設人工審核步驟）。
  *
  * 安裝步驟請見專案 README.md「後台設定」章節。
  */
@@ -65,7 +66,7 @@ function doPost(e) {
       data.date,
       data.description || "",
       data.driveFolderId,
-      "pending",
+      "published",
       new Date()
     ]);
 
