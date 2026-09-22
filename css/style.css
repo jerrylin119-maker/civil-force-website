@@ -3,18 +3,21 @@
    =================================================================== */
 
 :root {
-  --navy: #1e3a8a;
-  --navy-dark: #14275c;
-  --red: #b91c1c;
-  --red-dark: #7f1d1d;
-  --gold: #d4a017;
-  --bg: #f7f8fb;
+  /* 台東藍（取自 2026 台東博覽會識別色）為主色，融合消防火焰橙紅與鳳凰金 */
+  --navy: #003a94;       /* 台東藍 */
+  --navy-dark: #001c49;  /* 深台東藍 */
+  --sky: #3f6fb5;        /* 中藍，輔助點綴 */
+  --sky-light: #7fa8d9;  /* 淺藍，卡片/標籤點綴 */
+  --red: #e2531d;        /* 火鳳凰橙紅（消防火焰意象） */
+  --red-dark: #a8330f;   /* 深橙紅 */
+  --gold: #eab308;       /* 鳳凰金／艷陽黃 */
+  --bg: #eef3fa;         /* 台東藍調淺色背景 */
   --card-bg: #ffffff;
   --text: #1f2937;
   --text-muted: #64748b;
-  --border: #e2e8f0;
-  --shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 8px 28px rgba(15, 23, 42, 0.14);
+  --border: #dbe6f4;
+  --shadow: 0 2px 10px rgba(0, 43, 105, 0.1);
+  --shadow-lg: 0 8px 28px rgba(0, 43, 105, 0.16);
   --radius: 12px;
 }
 
@@ -146,7 +149,7 @@ nav.main-nav a.active {
   background: repeating-linear-gradient(
     135deg,
     var(--gold) 0 22px,
-    #14275c 22px 44px
+    var(--navy-dark) 22px 44px
   );
 }
 
@@ -179,6 +182,14 @@ nav.main-nav a.active {
 @media (min-width: 1100px) {
   .hero .emblem-watermark.left { display: block; }
 }
+.hero-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-waves svg { width: 100%; height: 100%; }
+
 .hero-flame-edge {
   position: absolute;
   left: 0;

@@ -1,26 +1,44 @@
-<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="義消總隊徽章">
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="義消總隊火鳳凰徽章">
   <defs>
     <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#f3cf6b"/>
-      <stop offset="1" stop-color="#b8860b"/>
+      <stop offset="0" stop-color="#f7d766"/>
+      <stop offset="1" stop-color="#c8930f"/>
     </linearGradient>
-    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
-      <stop offset="0" stop-color="#b91c1c"/>
-      <stop offset="0.55" stop-color="#e0662b"/>
-      <stop offset="1" stop-color="#f4c542"/>
+    <radialGradient id="skyBase" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#0a4bb0"/>
+      <stop offset="1" stop-color="#001c49"/>
+    </radialGradient>
+    <linearGradient id="flame" x1="0.5" y1="1" x2="0.5" y2="0">
+      <stop offset="0" stop-color="#a8330f"/>
+      <stop offset="0.5" stop-color="#e2531d"/>
+      <stop offset="1" stop-color="#f7d766"/>
     </linearGradient>
   </defs>
 
-  <circle cx="60" cy="60" r="57" fill="#0f2159"/>
+  <!-- 台東藍底 -->
+  <circle cx="60" cy="60" r="57" fill="url(#skyBase)"/>
   <circle cx="60" cy="60" r="57" fill="none" stroke="url(#ring)" stroke-width="3"/>
 
-  <g fill="#b91c1c" stroke="#f3cf6b" stroke-width="1.4" stroke-linejoin="round">
-    <path d="M60,60 L40,34 Q35,30 40,24 L50,10 L60,20 L70,10 L80,24 Q85,30 80,34 Z"/>
-    <path d="M60,60 L86,40 Q90,35 96,40 L110,50 L100,60 L110,70 L96,80 Q90,85 86,80 Z"/>
-    <path d="M60,60 L80,86 Q85,90 80,96 L70,110 L60,100 L50,110 L40,96 Q35,90 40,86 Z"/>
-    <path d="M60,60 L34,80 Q30,85 24,80 L10,70 L20,60 L10,50 L24,40 Q30,35 34,40 Z"/>
+  <!-- 海浪意象（台東藍海岸線） -->
+  <clipPath id="clip-circle"><circle cx="60" cy="60" r="54"/></clipPath>
+  <g clip-path="url(#clip-circle)" opacity="0.5">
+    <path d="M-5,96 C15,86 30,104 50,96 C70,88 85,104 105,96 C112,93 118,91 125,88 L125,125 L-5,125 Z" fill="#3f6fb5" opacity="0.55"/>
+    <path d="M-5,104 C15,96 30,112 50,104 C70,96 85,112 105,104 C112,101 118,99 125,97 L125,125 L-5,125 Z" fill="#7fa8d9" opacity="0.5"/>
   </g>
 
-  <circle cx="60" cy="60" r="19" fill="#0f2159" stroke="url(#ring)" stroke-width="2"/>
-  <path d="M60,48 C55,54 52,58 52,63 C52,68.5 55.6,72 60,72 C64.4,72 68,68.5 68,63 C68,60 66.5,57.5 64.5,55.5 C64.7,58 63.6,59.6 62,60.5 C62.6,57 61.6,52.5 60,48 Z" fill="url(#flame)"/>
+  <!-- 火鳳凰 -->
+  <g transform="translate(60,62) scale(0.86) translate(-60,-60)">
+    <!-- 尾羽（火焰狀三道） -->
+    <path d="M52,66 C40,80 34,96 40,108 C46,98 50,86 56,70 Z" fill="url(#flame)"/>
+    <path d="M58,66 C54,84 56,100 60,116 C64,100 66,84 62,66 Z" fill="url(#flame)"/>
+    <path d="M68,66 C80,80 86,96 80,108 C74,98 70,86 64,70 Z" fill="url(#flame)"/>
+
+    <!-- 左翼 -->
+    <path d="M50,48 C36,50 22,46 10,34 C18,36 26,34 32,28 C22,24 14,18 8,8 C20,14 30,16 38,22 C40,30 44,38 50,48 Z" fill="url(#flame)"/>
+    <!-- 右翼 -->
+    <path d="M70,48 C84,50 98,46 110,34 C102,36 94,34 88,28 C98,24 106,18 112,8 C100,14 90,16 82,22 C80,30 76,38 70,48 Z" fill="url(#flame)"/>
+
+    <!-- 身軀與頭部 -->
+    <path d="M60,14 C66,26 72,34 70,46 C69,54 66,58 60,64 C54,58 51,54 50,46 C48,34 54,26 60,14 Z" fill="url(#flame)"/>
+  </g>
 </svg>
