@@ -1,0 +1,18 @@
+name: Keep Apps Script Warm
+
+# 定時呼叫後台的 Google Apps Script 網址，避免長時間沒人使用時
+# 第一次載入活動花絮頁面要等好幾秒的「冷啟動」延遲。
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # 每 10 分鐘一次（GitHub 排程實際上可能有幾分鐘誤差）
+  workflow_dispatch:          # 也可以到 Actions 頁面手動點一次執行
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Apps Script Web App
+        run: |
+          curl -s -o /dev/null -w "HTTP status: %{http_code}\n" \
+            "https://script.google.com/macros/s/AKfycbxZoOEV3cSHG5agwsMQIuw_DhNxgs5TiG_X2EiPIzUi-ddvvbgoDX4Hxy6pUeuL6EwJQg/exec"

@@ -17,6 +17,8 @@ civil_force_website/
 ├── admin.html            # 同仁後台表單頁面
 ├── admin/
 │   └── apps-script.gs    # 貼到 Google Apps Script 的後台程式碼
+├── .github/workflows/
+│   └── keep-alive.yml    # 定時喚醒 Apps Script，避免冷啟動延遲
 ├── css/style.css
 ├── js/
 │   ├── config.js         # 後台網址、通關密語設定
@@ -140,6 +142,16 @@ python -m http.server 8000
 > 💡 之後如果要更新後台程式邏輯，只要修改 Apps Script 裡的程式碼後重新「管理部署作業 → 編輯 → 部署」即可，網址不會變動。
 >
 > ⚠️ `admin.html` 的通關密語只是給同仁使用上的一層基本防護，並非嚴謹的帳號權限系統；請勿把 `admin.html` 的連結放在公開導覽列或對外公告，僅私下告知需要使用後台的同仁即可。
+
+## 避免後台冷啟動延遲（GitHub Actions 定時喚醒）
+
+Google Apps Script 網頁應用程式如果一段時間沒人呼叫，下一次讀取（例如訪客打開活動花絮頁面）可能會多等個幾秒才有回應，這是 Google 那端的正常現象。
+
+本專案內建 `.github/workflows/keep-alive.yml`，只要您的網站程式碼是放在 **GitHub Repository** 裡（就是「部署到網路上」那一步用的同一個 Repo），GitHub 會自動每 10 分鐘左右呼叫一次後台網址，讓它保持在「熱」的狀態，訪客實際感受到的延遲會少很多。**不需要額外設定**，程式碼一推上 GitHub 就會自動啟用；可以到 Repository 的 **Actions** 分頁看執行紀錄，或手動點 **Run workflow** 立即觸發一次。
+
+> 💡 GitHub 的排程本身不保證分秒不差，實際間隔可能是 10～20 分鐘，屬正常現象，不影響效果。
+>
+> ⚠️ 如果您把 `SHEET_API_URL` 換成別份試算表對應的新網址，記得也要同步修改 `.github/workflows/keep-alive.yml` 裡呼叫的網址。
 
 ## 部署到網路上（免費，任何人皆可瀏覽）
 
