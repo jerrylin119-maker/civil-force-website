@@ -134,18 +134,37 @@ function renderAnnouncements(container, items) {
    資料來源：已設定 SHEET_API_URL（js/config.js）時讀取 Google 試算表後台，
    否則退回讀取本機 data/activities.json。
    =================================================================== */
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Apps Script 網頁應用程式偶爾會有暫時性延遲或錯誤（冷啟動），
+// 失敗時自動重試幾次，避免訪客第一次載入就看到錯誤訊息。
+async function fetchWithRetry(url, options, attempts = 3, delayMs = 1200) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res;
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) await wait(delayMs);
+    }
+  }
+  throw lastErr;
+}
+
 async function loadGalleryData() {
   const listEl = document.getElementById("gallery-list");
   const apiUrl = (typeof SHEET_API_URL !== "undefined" && SHEET_API_URL) ? SHEET_API_URL : "";
   try {
     let data;
     if (apiUrl) {
-      const res = await fetch(apiUrl, { cache: "no-store" });
-      if (!res.ok) throw new Error("無法載入後台試算表資料");
+      const res = await fetchWithRetry(apiUrl, { cache: "no-store" });
       data = await res.json();
     } else {
-      const res = await fetch("data/activities.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("無法載入 activities.json");
+      const res = await fetchWithRetry("data/activities.json", { cache: "no-store" });
       data = await res.json();
     }
     renderGallery(listEl, data || []);
