@@ -33,6 +33,7 @@
         <li><a href="index.html">首頁 / 組織介紹</a></li>
         <li><a href="plans.html">年度計畫及活動公布</a></li>
         <li><a href="gallery.html">活動花絮</a></li>
+        <li><a href="disaster.html">重大災害支援實錄</a></li>
       </ul>
     </nav>
   </div>
@@ -41,8 +42,8 @@
 <div class="page-header">
   <img class="emblem-watermark" src="images/emblem.png" alt="" aria-hidden="true" />
   <div class="container">
-    <h2>新增活動花絮</h2>
-    <p>同仁專用後台，送出後將立即顯示於公開的活動花絮頁面，請確認資料無誤再送出</p>
+    <h2>後台管理</h2>
+    <p>同仁專用後台，送出後將立即顯示於對應的公開頁面，請確認資料無誤再送出</p>
   </div>
 </div>
 
@@ -62,48 +63,49 @@
       <p id="pin-error" style="color:var(--red); font-size:0.85rem; display:none;">密語錯誤，請再試一次。</p>
     </div>
 
-    <div id="activity-list-wrap" style="display:none; margin-bottom:20px;">
-      <div class="card" style="margin-bottom:16px;">
-        <h4>📁 活動花絮雲端資料夾</h4>
-        <p style="color:var(--text-muted); font-size:0.9rem;">
-          活動相片統一存放在這個 Google 雲端硬碟資料夾，請到裡面依活動建立子資料夾上傳相片：
-        </p>
-        <a href="https://drive.google.com/drive/folders/1dMoXCz82gEcUedKwQcBZstox1CSBUo7z" target="_blank" rel="noopener" class="album-link">開啟活動花絮雲端資料夾 →</a>
+    <div id="admin-main" style="display:none;">
+
+      <div id="type-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
+        <button type="button" class="btn btn-primary type-tab" data-type="activity" style="flex:1;">📷 活動花絮</button>
+        <button type="button" class="btn btn-ghost type-tab" data-type="disaster" style="flex:1;">🚨 重大災害支援實錄</button>
       </div>
 
-      <div class="card">
-        <h4>📋 現有活動花絮（點「編輯」可修改連結或內容）</h4>
+      <div id="folder-info-wrap" style="margin-bottom:16px;"></div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <h4 id="list-title">📋 現有活動花絮（點「編輯」可修改連結或內容）</h4>
         <div id="activity-list" style="margin-top:12px;">
           <p style="color:var(--text-muted); font-size:0.9rem;">載入中...</p>
         </div>
       </div>
+
+      <form id="activity-form" class="card">
+        <h4 id="form-title">📷 新增活動花絮資料</h4>
+        <input type="hidden" id="f-id" value="" />
+
+        <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">名稱 *</label>
+        <input id="f-title" type="text" required placeholder="例：115年度春季常年訓練" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+
+        <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">日期 *</label>
+        <input id="f-date" type="date" required style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+
+        <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">說明</label>
+        <textarea id="f-description" rows="4" placeholder="簡短說明這筆資料的內容" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px; font-family:inherit;"></textarea>
+
+        <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">Google 雲端硬碟資料夾連結 *</label>
+        <input id="f-folder" type="text" required placeholder="https://drive.google.com/drive/folders/....." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
+        <p style="color:var(--text-muted); font-size:0.82rem; margin-top:6px;">
+          請先在 Google 雲端硬碟建立資料夾、上傳相片，並將分享權限設為「知道連結的任何人 / 檢視者」，再把資料夾連結貼在這裡。
+        </p>
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <button id="f-submit" type="submit" class="btn btn-primary" style="flex:1;">送出</button>
+          <button id="f-cancel-edit" type="button" class="btn btn-ghost" style="display:none;">取消編輯</button>
+        </div>
+        <p id="f-status" style="margin-top:12px; font-size:0.9rem;"></p>
+      </form>
+
     </div>
-
-    <form id="activity-form" class="card" style="display:none;">
-      <h4 id="form-title">📷 新增活動花絮資料</h4>
-      <input type="hidden" id="f-id" value="" />
-
-      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動名稱 *</label>
-      <input id="f-title" type="text" required placeholder="例：115年度春季常年訓練" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
-
-      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動日期 *</label>
-      <input id="f-date" type="date" required style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
-
-      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">活動說明</label>
-      <textarea id="f-description" rows="4" placeholder="簡短說明這場活動的內容" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px; font-family:inherit;"></textarea>
-
-      <label style="display:block; margin-top:16px; font-weight:600; font-size:0.9rem;">Google 雲端硬碟資料夾連結 *</label>
-      <input id="f-folder" type="text" required placeholder="https://drive.google.com/drive/folders/....." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:1rem; margin-top:6px;" />
-      <p style="color:var(--text-muted); font-size:0.82rem; margin-top:6px;">
-        請先在 Google 雲端硬碟建立資料夾、上傳相片，並將分享權限設為「知道連結的任何人 / 檢視者」，再把資料夾連結貼在這裡。
-      </p>
-
-      <div style="display:flex; gap:10px; margin-top:20px;">
-        <button id="f-submit" type="submit" class="btn btn-primary" style="flex:1;">送出活動花絮</button>
-        <button id="f-cancel-edit" type="button" class="btn btn-ghost" style="display:none;">取消編輯</button>
-      </div>
-      <p id="f-status" style="margin-top:12px; font-size:0.9rem;"></p>
-    </form>
 
   </div>
 </section>

@@ -9,8 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("plans-annual-goals")) {
     loadPlansData();
   }
-  if (document.getElementById("gallery-list")) {
-    loadGalleryData();
+  const galleryEl = document.getElementById("gallery-list");
+  if (galleryEl) {
+    loadGalleryData(galleryEl.dataset.type || "activity");
   }
 });
 
@@ -130,10 +131,17 @@ function renderAnnouncements(container, items) {
 }
 
 /* ===================================================================
-   活動花絮 (gallery.html) — 串接 Google 雲端硬碟資料夾
+   活動花絮 (gallery.html) / 重大災害支援實錄 (disaster.html)
+   — 皆為串接 Google 雲端硬碟資料夾的「相簿型」清單頁面，共用同一套邏輯，
+   以 data-type 區分資料分類（對應 Apps Script 裡不同的試算表分頁）。
    資料來源：已設定 SHEET_API_URL（js/config.js）時讀取 Google 試算表後台，
-   否則退回讀取本機 data/activities.json。
+   否則退回讀取本機對應的 JSON 檔案。
    =================================================================== */
+const RECORD_TYPES = {
+  activity: { label: "活動花絮", icon: "📷", fallback: "data/activities.json" },
+  disaster: { label: "重大災害支援實錄", icon: "🚨", fallback: "data/disasters.json" }
+};
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -155,28 +163,32 @@ async function fetchWithRetry(url, options, attempts = 3, delayMs = 1200) {
   throw lastErr;
 }
 
-async function loadGalleryData() {
+async function loadGalleryData(type) {
+  type = type || "activity";
+  const cfg = RECORD_TYPES[type] || RECORD_TYPES.activity;
   const listEl = document.getElementById("gallery-list");
   const apiUrl = (typeof SHEET_API_URL !== "undefined" && SHEET_API_URL) ? SHEET_API_URL : "";
   try {
     let data;
     if (apiUrl) {
-      const res = await fetchWithRetry(apiUrl, { cache: "no-store" });
+      const sep = apiUrl.indexOf("?") === -1 ? "?" : "&";
+      const res = await fetchWithRetry(apiUrl + sep + "type=" + encodeURIComponent(type), { cache: "no-store" });
       data = await res.json();
     } else {
-      const res = await fetchWithRetry("data/activities.json", { cache: "no-store" });
+      const res = await fetchWithRetry(cfg.fallback, { cache: "no-store" });
       data = await res.json();
     }
-    renderGallery(listEl, data || []);
+    renderGallery(listEl, data || [], cfg);
   } catch (err) {
     console.error(err);
-    listEl.innerHTML = `<div class="empty-note">⚠️ 活動花絮資料載入失敗，請確認資料來源設定是否正確。</div>`;
+    listEl.innerHTML = `<div class="empty-note">⚠️ ${escapeHtml(cfg.label)}資料載入失敗，請確認資料來源設定是否正確。</div>`;
   }
 }
 
-function renderGallery(container, activities) {
+function renderGallery(container, activities, cfg) {
+  cfg = cfg || RECORD_TYPES.activity;
   if (!activities.length) {
-    container.innerHTML = `<div class="empty-note">目前尚無活動花絮，請於 data/activities.json 新增活動並填入 Google 雲端硬碟資料夾 ID。</div>`;
+    container.innerHTML = `<div class="empty-note">目前尚無${escapeHtml(cfg.label)}，請於 ${escapeHtml(cfg.fallback)} 新增內容並填入 Google 雲端硬碟資料夾 ID。</div>`;
     return;
   }
   const sorted = [...activities].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -188,7 +200,7 @@ function renderGallery(container, activities) {
       <div class="album" data-index="${idx}">
         <div class="album-head" role="button" tabindex="0">
           <div class="album-title">
-            <h4>📷 ${escapeHtml(act.title)}</h4>
+            <h4>${cfg.icon} ${escapeHtml(act.title)}</h4>
             <span class="album-date">${escapeHtml(act.date || "")}</span>
           </div>
           <span class="album-toggle">▾</span>
@@ -203,7 +215,7 @@ function renderGallery(container, activities) {
                      act.driveFolderId
                    )}" target="_blank" rel="noopener">在 Google 雲端硬碟開啟完整相簿 →</a>
                  </div>`
-              : `<div class="album-placeholder">尚未設定此活動的 Google 雲端硬碟資料夾 ID，請於 data/activities.json 填入 driveFolderId。</div>`
+              : `<div class="album-placeholder">尚未設定此筆資料的 Google 雲端硬碟資料夾 ID。</div>`
           }
         </div>
       </div>`;

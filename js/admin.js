@@ -1,5 +1,6 @@
 // ===================================================================
-// 新增／編輯活動花絮後台 (admin.html)
+// 新增／編輯後台 (admin.html) — 活動花絮 與 重大災害支援實錄 共用同一套介面，
+// 以 currentType 切換分類，對應 RECORD_TYPES（定義於 main.js）。
 // ===================================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,13 +12,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const pin = () => (typeof ADMIN_PIN !== "undefined") ? ADMIN_PIN : "";
 
+  // 各分類共用的雲端硬碟總資料夾（僅供後台顯示參考，非個別項目連結）
+  const FOLDER_LINKS = {
+    activity: "https://drive.google.com/drive/folders/1dMoXCz82gEcUedKwQcBZstox1CSBUo7z"
+  };
+
+  let currentType = "activity";
+
   const pinGate = document.getElementById("pin-gate");
   const pinInput = document.getElementById("pin-input");
   const pinSubmit = document.getElementById("pin-submit");
   const pinError = document.getElementById("pin-error");
+  const adminMain = document.getElementById("admin-main");
   const form = document.getElementById("activity-form");
-  const listWrap = document.getElementById("activity-list-wrap");
   const listEl = document.getElementById("activity-list");
+  const listTitle = document.getElementById("list-title");
+  const folderInfoWrap = document.getElementById("folder-info-wrap");
   const formTitle = document.getElementById("form-title");
   const idField = document.getElementById("f-id");
   const submitBtn = document.getElementById("f-submit");
@@ -27,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const expected = pin();
     if (pinInput.value === expected) {
       pinGate.style.display = "none";
-      form.style.display = "block";
-      listWrap.style.display = "block";
+      adminMain.style.display = "block";
+      applyTypeUI();
       loadActivityList();
     } else {
       pinError.style.display = "block";
@@ -43,11 +53,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.querySelectorAll(".type-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.type === currentType) return;
+      currentType = btn.dataset.type;
+      document.querySelectorAll(".type-tab").forEach((b) => {
+        const active = b.dataset.type === currentType;
+        b.classList.toggle("btn-primary", active);
+        b.classList.toggle("btn-ghost", !active);
+      });
+      resetToCreateMode();
+      applyTypeUI();
+      loadActivityList();
+    });
+  });
+
+  function typeCfg() {
+    return (typeof RECORD_TYPES !== "undefined" && RECORD_TYPES[currentType]) || { label: "活動花絮", icon: "📷" };
+  }
+
+  function applyTypeUI() {
+    const cfg = typeCfg();
+    listTitle.textContent = `📋 現有${cfg.label}（點「編輯」可修改連結或內容）`;
+    formTitle.textContent = `${cfg.icon} 新增${cfg.label}資料`;
+    submitBtn.textContent = "送出";
+
+    const folderUrl = FOLDER_LINKS[currentType];
+    folderInfoWrap.innerHTML = folderUrl
+      ? `<div class="card">
+           <h4>📁 ${escapeHtml(cfg.label)}雲端資料夾</h4>
+           <p style="color:var(--text-muted); font-size:0.9rem;">相片／檔案統一存放在這個 Google 雲端硬碟資料夾，請到裡面依項目建立子資料夾上傳：</p>
+           <a href="${escapeHtml(folderUrl)}" target="_blank" rel="noopener" class="album-link">開啟${escapeHtml(cfg.label)}雲端資料夾 →</a>
+         </div>`
+      : "";
+  }
+
   async function callApi(payload) {
     const res = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(Object.assign({ pin: pin() }, payload))
+      body: JSON.stringify(Object.assign({ pin: pin(), type: currentType }, payload))
     });
     return res.json();
   }
@@ -56,13 +101,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadActivityList() {
     if (!apiUrl) return;
+    const cfg = typeCfg();
     listEl.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">載入中...</p>`;
     try {
       const result = await callApi({ action: "list" });
       if (!result.ok) throw new Error(result.error || "讀取失敗");
       const items = result.items || [];
       if (!items.length) {
-        listEl.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">目前尚無任何活動花絮資料。</p>`;
+        listEl.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">目前尚無任何${escapeHtml(cfg.label)}資料。</p>`;
         return;
       }
       const sorted = items.slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
@@ -98,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const id = btn.closest("[data-id]").getAttribute("data-id");
           const item = sorted.find((it) => it.id === id);
           if (!item) return;
-          if (!confirm(`確定要刪除「${item.title}」這筆活動花絮嗎？此動作無法復原。`)) return;
+          if (!confirm(`確定要刪除「${item.title}」這筆資料嗎？此動作無法復原。`)) return;
           btn.disabled = true;
           const result = await callApi({ action: "delete", id });
           if (result.ok) {
@@ -111,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } catch (err) {
       console.error(err);
-      listEl.innerHTML = `<p style="color:var(--red); font-size:0.9rem;">⚠️ 讀取活動清單失敗，請重新整理頁面再試一次。</p>`;
+      listEl.innerHTML = `<p style="color:var(--red); font-size:0.9rem;">⚠️ 讀取清單失敗，請重新整理頁面再試一次。</p>`;
     }
   }
 
@@ -121,8 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("f-date").value = item.date || "";
     document.getElementById("f-description").value = item.description || "";
     document.getElementById("f-folder").value = item.driveFolderId || "";
-    formTitle.textContent = "✏️ 編輯活動花絮資料";
-    submitBtn.textContent = "更新活動花絮";
+    const cfg = typeCfg();
+    formTitle.textContent = `✏️ 編輯${cfg.label}資料`;
+    submitBtn.textContent = "更新";
     cancelBtn.style.display = "inline-block";
     document.getElementById("f-status").textContent = "";
     form.scrollIntoView({ behavior: "smooth" });
@@ -131,8 +178,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetToCreateMode() {
     idField.value = "";
     form.reset();
-    formTitle.textContent = "📷 新增活動花絮資料";
-    submitBtn.textContent = "送出活動花絮";
+    const cfg = typeCfg();
+    formTitle.textContent = `${cfg.icon} 新增${cfg.label}資料`;
+    submitBtn.textContent = "送出";
     cancelBtn.style.display = "none";
     document.getElementById("f-status").textContent = "";
   }
@@ -152,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!title || !date || !folderInput) {
       statusEl.style.color = "var(--red)";
-      statusEl.textContent = "請填寫必填欄位（活動名稱、日期、雲端硬碟連結）。";
+      statusEl.textContent = "請填寫必填欄位（名稱、日期、雲端硬碟連結）。";
       return;
     }
     if (!driveFolderId) {
@@ -177,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await callApi(payload);
       if (result.ok) {
         statusEl.style.color = "#166534";
-        statusEl.textContent = id ? "✅ 已更新！活動花絮頁面將立即顯示新內容。" : "✅ 已送出並發布，活動花絮頁面將立即顯示！";
+        statusEl.textContent = id ? "✅ 已更新！頁面將立即顯示新內容。" : "✅ 已送出並發布，頁面將立即顯示！";
         resetToCreateMode();
         loadActivityList();
       } else {

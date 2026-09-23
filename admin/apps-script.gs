@@ -1,25 +1,38 @@
 /**
- * 活動花絮後台 — Google Apps Script
+ * 活動花絮／重大災害支援實錄 後台 — Google Apps Script
+ *
+ * 同一份程式碼同時服務兩種「相簿型」清單，各自存在獨立的試算表分頁：
+ *   type "activity" → 分頁「活動花絮」
+ *   type "disaster" → 分頁「重大災害支援實錄」
  *
  * 用途：
- *   - doGet  提供「活動花絮」頁面讀取已發布(published)的活動清單 (JSON)
+ *   - doGet  提供對外頁面讀取已發布(published)的清單 (JSON)，用 ?type= 區分分類
  *   - doPost 接收 admin.html 表單送出的請求，依 action 分流：
- *       action 省略或 "create"：新增一筆活動，直接設為 published
- *       action "list"         ：列出全部活動（供後台編輯清單使用，需通關密語）
- *       action "update"       ：依 id 更新既有活動欄位（需通關密語）
- *       action "delete"       ：依 id 刪除一筆活動（需通關密語）
+ *       action 省略或 "create"：新增一筆資料，直接設為 published
+ *       action "list"         ：列出該分類全部資料（供後台編輯清單使用，需通關密語）
+ *       action "update"       ：依 id 更新既有資料欄位（需通關密語）
+ *       action "delete"       ：依 id 刪除一筆資料（需通關密語）
+ *     皆以 data.type / e.parameter.type 指定分類，省略時預設為 "activity"。
  *
  * 安裝步驟請見專案 README.md「後台設定」章節。
  */
 
-const SHEET_NAME = "活動花絮";      // 試算表分頁名稱，請與您建立的分頁名稱一致
+const SHEET_NAMES = {
+  activity: "活動花絮",
+  disaster: "重大災害支援實錄"
+};
 const EXPECTED_PIN = "ttfd119";     // 需與 js/config.js 裡的 ADMIN_PIN 保持一致
 
-function getSheet_() {
+function resolveSheetName_(type) {
+  return SHEET_NAMES[type] || SHEET_NAMES.activity;
+}
+
+function getSheet_(type) {
+  const name = resolveSheetName_(type);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SHEET_NAME);
+  let sheet = ss.getSheetByName(name);
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+    sheet = ss.insertSheet(name);
     sheet.appendRow(["id", "title", "date", "description", "driveFolderId", "status", "submittedAt"]);
   }
   return sheet;
@@ -38,7 +51,8 @@ function getHeaderIndex_(headers) {
 }
 
 function doGet(e) {
-  const sheet = getSheet_();
+  const type = (e && e.parameter && e.parameter.type) || "activity";
+  const sheet = getSheet_(type);
   const values = sheet.getDataRange().getValues();
   const headers = values.shift();
   const idx = getHeaderIndex_(headers);
@@ -63,21 +77,22 @@ function doPost(e) {
       return jsonOutput_({ ok: false, error: "通關密語錯誤" });
     }
 
+    const type = data.type || "activity";
     const action = data.action || "create";
-    if (action === "list") return handleList_();
-    if (action === "update") return handleUpdate_(data);
-    if (action === "delete") return handleDelete_(data);
-    return handleCreate_(data);
+    if (action === "list") return handleList_(type);
+    if (action === "update") return handleUpdate_(type, data);
+    if (action === "delete") return handleDelete_(type, data);
+    return handleCreate_(type, data);
   } catch (err) {
     return jsonOutput_({ ok: false, error: String(err) });
   }
 }
 
-function handleCreate_(data) {
+function handleCreate_(type, data) {
   if (!data.title || !data.date || !data.driveFolderId) {
     return jsonOutput_({ ok: false, error: "缺少必要欄位" });
   }
-  const sheet = getSheet_();
+  const sheet = getSheet_(type);
   sheet.appendRow([
     Utilities.getUuid(),
     data.title,
@@ -90,8 +105,8 @@ function handleCreate_(data) {
   return jsonOutput_({ ok: true });
 }
 
-function handleList_() {
-  const sheet = getSheet_();
+function handleList_(type) {
+  const sheet = getSheet_(type);
   const values = sheet.getDataRange().getValues();
   const headers = values.shift();
   const idx = getHeaderIndex_(headers);
@@ -110,9 +125,9 @@ function handleList_() {
   return jsonOutput_({ ok: true, items: rows });
 }
 
-function handleUpdate_(data) {
+function handleUpdate_(type, data) {
   if (!data.id) return jsonOutput_({ ok: false, error: "缺少 id" });
-  const sheet = getSheet_();
+  const sheet = getSheet_(type);
   const values = sheet.getDataRange().getValues();
   const headers = values[0];
   const idx = getHeaderIndex_(headers);
@@ -128,12 +143,12 @@ function handleUpdate_(data) {
       return jsonOutput_({ ok: true });
     }
   }
-  return jsonOutput_({ ok: false, error: "找不到該筆活動" });
+  return jsonOutput_({ ok: false, error: "找不到該筆資料" });
 }
 
-function handleDelete_(data) {
+function handleDelete_(type, data) {
   if (!data.id) return jsonOutput_({ ok: false, error: "缺少 id" });
-  const sheet = getSheet_();
+  const sheet = getSheet_(type);
   const values = sheet.getDataRange().getValues();
   const idx = getHeaderIndex_(values[0]);
 
@@ -143,7 +158,7 @@ function handleDelete_(data) {
       return jsonOutput_({ ok: true });
     }
   }
-  return jsonOutput_({ ok: false, error: "找不到該筆活動" });
+  return jsonOutput_({ ok: false, error: "找不到該筆資料" });
 }
 
 function jsonOutput_(obj) {
