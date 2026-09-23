@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 各分類共用的雲端硬碟總資料夾（僅供後台顯示參考，非個別項目連結）
   const FOLDER_LINKS = {
-    activity: "https://drive.google.com/drive/folders/1dMoXCz82gEcUedKwQcBZstox1CSBUo7z"
+    activity: "https://drive.google.com/drive/folders/1dMoXCz82gEcUedKwQcBZstox1CSBUo7z",
+    disaster: "https://drive.google.com/drive/folders/1eNyHMxAVN_J_O4RNKBuf3xfcd14p2FtF"
   };
 
   let currentType = "activity";
