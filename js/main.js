@@ -5,6 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   initNavToggle();
   initActiveNavLink();
+  initCalendarEmbed();
 
   if (document.getElementById("plans-annual-goals")) {
     loadPlansData();
@@ -21,6 +22,30 @@ function initNavToggle() {
   const nav = document.querySelector(".main-nav");
   if (!toggle || !nav) return;
   toggle.addEventListener("click", () => nav.classList.toggle("open"));
+}
+
+/* ---------- 重要活動行事曆 (calendar.html) ---------- */
+/* 與 css 行事曆斷點 900px 保持一致：窄螢幕改為活動清單。 */
+function initCalendarEmbed() {
+  const frame = document.getElementById("brigade-calendar");
+  if (!frame) return;
+  const wrap = document.getElementById("calendar-frame-wrap");
+  const upcoming = document.getElementById("brigade-calendar-upcoming");
+  const mq = window.matchMedia("(max-width: 900px)");
+
+  const apply = () => {
+    const phone = mq.matches;
+    const next = phone ? frame.dataset.agendaSrc : frame.dataset.monthSrc;
+    if (next && frame.getAttribute("src") !== next) frame.setAttribute("src", next);
+    if (wrap) wrap.classList.toggle("is-agenda", phone);
+    if (!phone && upcoming && upcoming.dataset.src && upcoming.getAttribute("src") !== upcoming.dataset.src) {
+      upcoming.setAttribute("src", upcoming.dataset.src);
+    }
+  };
+
+  apply();
+  if (mq.addEventListener) mq.addEventListener("change", apply);
+  else if (mq.addListener) mq.addListener(apply);
 }
 
 /* ---------- 依目前頁面標記導覽列 active 狀態 ---------- */

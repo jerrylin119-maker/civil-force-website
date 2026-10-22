@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>重要活動行事曆｜台東縣義勇消防總隊</title>
+<meta name="description" content="台東縣義勇消防總隊重要活動行事曆，內嵌公開 Google 日曆「義消總隊行程」。" />
+<link rel="icon" type="image/png" href="images/emblem.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <span>台東縣義勇消防總隊 官方網站</span>
+    <span>服務專線：089-322112-1380</span>
+  </div>
+</div>
+<div class="hazard-strip"></div>
+
+<header class="site-header">
+  <div class="container nav-wrap">
+    <div class="brand">
+      <div class="emblem"><img src="images/emblem.png" alt="義消總隊徽章" /></div>
+      <div class="brand-text">
+        <h1>台東縣義勇消防總隊</h1>
+        <span>VOLUNTEER FIRE CORPS</span>
+      </div>
+    </div>
+    <button class="menu-toggle" aria-label="開啟選單">☰</button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html">首頁 / 組織介紹</a></li>
+        <li><a href="plans.html">年度計畫及活動公布</a></li>
+        <li><a href="calendar.html">重要活動行事曆</a></li>
+        <li><a href="gallery.html">活動花絮</a></li>
+        <li><a href="disaster.html">重大災害支援實錄</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="page-header">
+  <img class="emblem-watermark" src="images/emblem.png" alt="" aria-hidden="true" />
+  <div class="container">
+    <h2>重要活動行事曆</h2>
+    <p>查詢本總隊公開行程，掌握訓練、會議與重要活動時間</p>
+  </div>
+</div>
+
+<section class="block">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">CALENDAR</div>
+      <h3>義消總隊行程</h3>
+      <p>此行事曆直接嵌入本總隊的公開 Google 日曆，時區為台北（Asia/Taipei）。</p>
+    </div>
+
+    <div class="calendar-actions">
+      <a class="btn btn-primary" href="https://calendar.google.com/calendar/render?cid=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com" target="_blank" rel="noopener">加入 Google 日曆</a>
+      <a class="calendar-feed-link" href="https://calendar.google.com/calendar/ical/2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com/public/basic.ics" target="_blank" rel="noopener">ICS 訂閱連結</a>
+    </div>
+    <p class="calendar-footnote">「加入 Google 日曆」會把「義消總隊行程」加到您自己的 Google 日曆；ICS 連結可供 Apple 日曆、Outlook 等軟體訂閱。寬螢幕預設為月曆，手機預設為活動清單，也可使用行事曆頁籤自行切換。</p>
+
+    <div class="calendar-frame-wrap" id="calendar-frame-wrap">
+      <iframe
+        id="brigade-calendar"
+        title="義消總隊行程（Google 日曆）"
+        src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=MONTH&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
+        data-month-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=MONTH&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
+        data-agenda-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
+        loading="eager"
+      ></iframe>
+    </div>
+    <script>
+      (function () {
+        var frame = document.getElementById("brigade-calendar");
+        var phone = window.matchMedia("(max-width: 900px)").matches;
+        if (phone && frame.dataset.agendaSrc) frame.src = frame.dataset.agendaSrc;
+        if (phone) document.getElementById("calendar-frame-wrap").classList.add("is-agenda");
+      })();
+    </script>
+
+    <div class="calendar-upcoming" id="calendar-upcoming">
+      <div class="section-head">
+        <div class="kicker">UPCOMING</div>
+        <h3>近期活動</h3>
+        <p>以下為即將舉行的活動，與上方月曆同一份「義消總隊行程」。</p>
+      </div>
+      <div class="calendar-frame-wrap calendar-frame-wrap-agenda">
+        <iframe
+          id="brigade-calendar-upcoming"
+          title="義消總隊近期活動"
+          data-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showTabs=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
+          loading="lazy"
+        ></iframe>
+        <noscript>
+          <iframe
+            title="義消總隊近期活動"
+            src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showTabs=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
+            loading="lazy"
+          ></iframe>
+        </noscript>
+      </div>
+      <script>
+        (function () {
+          if (window.matchMedia("(max-width: 900px)").matches) return;
+          var frame = document.getElementById("brigade-calendar-upcoming");
+          if (frame && frame.dataset.src) frame.src = frame.dataset.src;
+        })();
+      </script>
+    </div>
+  </div>
+</section>
+
+<div class="hazard-strip"></div>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h5>台東縣義勇消防總隊</h5>
+        <p>本網站內容如有異動，請聯繫本局民力科修改。</p>
+      </div>
+      <div>
+        <h5>網站導覽</h5>
+        <ul>
+          <li><a href="index.html">首頁 / 組織介紹</a></li>
+          <li><a href="plans.html">年度計畫及活動公布</a></li>
+          <li><a href="calendar.html">重要活動行事曆</a></li>
+          <li><a href="gallery.html">活動花絮</a></li>
+          <li><a href="disaster.html">重大災害支援實錄</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>相關連結</h5>
+        <ul>
+          <li><a href="https://www.ttfd.gov.tw/" target="_blank" rel="noopener">臺東縣消防局</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 台東縣義勇消防總隊。All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
