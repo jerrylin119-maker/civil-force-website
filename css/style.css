@@ -116,6 +116,7 @@ nav.main-nav a {
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
+  white-space: nowrap;
   transition: background 0.2s ease;
 }
 nav.main-nav a:hover,
@@ -132,7 +133,8 @@ nav.main-nav a.active {
   cursor: pointer;
 }
 
-@media (max-width: 860px) {
+/* 導覽有五個項目，寬度不足時改為選單，避免文字擠出畫面 */
+@media (max-width: 1080px) {
   .menu-toggle { display: block; }
   nav.main-nav {
     display: none;
@@ -579,4 +581,64 @@ footer.site-footer a:hover { color: #fff; }
   border-radius: 8px;
   font-size: 0.85rem;
   margin-bottom: 20px;
+}
+
+/* ---------- Calendar (重要活動行事曆) ---------- */
+.calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 22px;
+  margin: -6px 0 18px;
+}
+.calendar-feed-link {
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.calendar-feed-link:hover { color: var(--red); }
+.calendar-footnote {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.calendar-frame-wrap {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.calendar-frame-wrap iframe {
+  width: 100%;
+  height: 760px;
+  border: 0;
+  display: block;
+  background: #fff;
+}
+#brigade-calendar-upcoming:not([src]) { display: none; height: 0; }
+.calendar-frame-wrap.is-agenda iframe,
+.calendar-frame-wrap-agenda iframe {
+  height: 640px;
+}
+.calendar-upcoming {
+  margin-top: 42px;
+}
+.calendar-upcoming .section-head { margin-bottom: 22px; }
+@media (max-width: 900px) {
+  .calendar-frame-wrap iframe,
+  .calendar-frame-wrap.is-agenda iframe {
+    height: min(78vh, 720px);
+    min-height: 560px;
+  }
+  #calendar-upcoming { display: none; }
+}
+@media (max-width: 560px) {
+  .calendar-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .calendar-actions .btn { text-align: center; }
 }

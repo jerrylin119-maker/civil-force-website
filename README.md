@@ -1,9 +1,10 @@
 # 台東縣義勇消防總隊 官方網站
 
-純 HTML / CSS / JavaScript 靜態網站，無需伺服器端程式，包含五個頁面：
+純 HTML / CSS / JavaScript 靜態網站，無需伺服器端程式，包含六個頁面：
 
 - `index.html`　首頁 / 組織介紹（沿革、組織架構、聯絡方式）
 - `plans.html`　年度計畫及活動公布
+- `calendar.html`　重要活動行事曆（內嵌公開 Google 日曆「義消總隊行程」）
 - `gallery.html`　活動花絮（直接串接 Google 雲端硬碟資料夾相片）
 - `disaster.html`　重大災害支援實錄（與活動花絮相同機制，另一個分類）
 - `admin.html`　**同仁後台**：不用編輯 JSON，直接在網頁上填表單新增／編輯／刪除活動花絮與重大災害支援實錄（需先完成下方「後台設定」）
@@ -14,6 +15,7 @@
 civil_force_website/
 ├── index.html
 ├── plans.html
+├── calendar.html
 ├── gallery.html
 ├── disaster.html
 ├── admin.html            # 同仁後台表單頁面（活動花絮／重大災害支援實錄共用）
