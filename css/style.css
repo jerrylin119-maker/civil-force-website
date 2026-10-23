@@ -624,7 +624,7 @@ footer.site-footer a:hover { color: #fff; }
   height: 640px;
 }
 .calendar-upcoming {
-  margin-top: 42px;
+  margin-bottom: 42px;
 }
 .calendar-upcoming .section-head { margin-bottom: 22px; }
 @media (max-width: 900px) {
@@ -633,7 +633,10 @@ footer.site-footer a:hover { color: #fff; }
     height: min(78vh, 720px);
     min-height: 560px;
   }
-  #calendar-upcoming { display: none; }
+  .calendar-frame-wrap-agenda iframe {
+    height: 640px;
+    min-height: 0;
+  }
 }
 @media (max-width: 560px) {
   .calendar-actions {
