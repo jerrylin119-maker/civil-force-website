@@ -38,7 +38,7 @@ function initCalendarEmbed() {
     const next = phone ? frame.dataset.agendaSrc : frame.dataset.monthSrc;
     if (next && frame.getAttribute("src") !== next) frame.setAttribute("src", next);
     if (wrap) wrap.classList.toggle("is-agenda", phone);
-    if (!phone && upcoming && upcoming.dataset.src && upcoming.getAttribute("src") !== upcoming.dataset.src) {
+    if (upcoming && upcoming.dataset.src && upcoming.getAttribute("src") !== upcoming.dataset.src) {
       upcoming.setAttribute("src", upcoming.dataset.src);
     }
   };
