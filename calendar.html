@@ -51,65 +51,39 @@
 <section class="block">
   <div class="container">
     <div class="section-head">
+      <div class="kicker">UPCOMING</div>
+      <h3>近期活動</h3>
+      <p>接下來的活動與生日會列在這裡，每一筆都有日期與名稱，與下方月曆同一份「義消總隊行程」。</p>
+    </div>
+    <div class="calendar-frame-wrap calendar-frame-wrap-agenda" id="calendar-upcoming">
+      <iframe
+        id="brigade-calendar-upcoming"
+        title="義消總隊近期活動"
+        src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showNav=0&amp;showDate=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0"
+        loading="eager"
+      ></iframe>
+    </div>
+
+    <div class="section-head calendar-month-head">
       <div class="kicker">CALENDAR</div>
       <h3>義消總隊行程</h3>
-      <p>此行事曆直接嵌入本總隊的公開 Google 日曆，時區為台北（Asia/Taipei）。</p>
+      <p>月曆直接嵌入本總隊的公開 Google 日曆，時區為台北（Asia/Taipei）。手機與電腦都顯示月曆。</p>
     </div>
 
     <div class="calendar-actions">
       <a class="btn btn-primary" href="https://calendar.google.com/calendar/render?cid=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com" target="_blank" rel="noopener">加入 Google 日曆</a>
       <a class="calendar-feed-link" href="https://calendar.google.com/calendar/ical/2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com/public/basic.ics" target="_blank" rel="noopener">ICS 訂閱連結</a>
     </div>
-    <p class="calendar-footnote">「加入 Google 日曆」會把「義消總隊行程」加到您自己的 Google 日曆；ICS 連結可供 Apple 日曆、Outlook 等軟體訂閱。寬螢幕預設為月曆，手機預設為活動清單，也可使用行事曆頁籤自行切換。</p>
-
-    <div class="calendar-upcoming" id="calendar-upcoming">
-      <div class="section-head">
-        <div class="kicker">UPCOMING</div>
-        <h3>近期活動</h3>
-        <p>以下為即將舉行的活動，與下方行事曆同一份「義消總隊行程」。</p>
-      </div>
-      <div class="calendar-frame-wrap calendar-frame-wrap-agenda">
-        <iframe
-          id="brigade-calendar-upcoming"
-          title="義消總隊近期活動"
-          data-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showTabs=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
-          loading="lazy"
-        ></iframe>
-        <noscript>
-          <iframe
-            title="義消總隊近期活動"
-            src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showTabs=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
-            loading="lazy"
-          ></iframe>
-        </noscript>
-      </div>
-      <script>
-        (function () {
-          var frame = document.getElementById("brigade-calendar-upcoming");
-          if (frame && frame.dataset.src) frame.src = frame.dataset.src;
-        })();
-      </script>
-    </div>
+    <p class="calendar-footnote">「加入 Google 日曆」會把「義消總隊行程」加到您自己的 Google 日曆；ICS 連結可供 Apple 日曆、Outlook 等軟體訂閱。</p>
 
     <div class="calendar-frame-wrap" id="calendar-frame-wrap">
       <iframe
         id="brigade-calendar"
         title="義消總隊行程（Google 日曆）"
         src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=MONTH&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
-        data-month-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=MONTH&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
-        data-agenda-src="https://calendar.google.com/calendar/embed?src=2u7jd3s9upb27092r4uhe69q0c%40group.calendar.google.com&amp;ctz=Asia%2FTaipei&amp;hl=zh_TW&amp;mode=AGENDA&amp;showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0"
         loading="eager"
       ></iframe>
     </div>
-    <script>
-      (function () {
-        var frame = document.getElementById("brigade-calendar");
-        var phone = window.matchMedia("(max-width: 900px)").matches;
-        if (phone && frame.dataset.agendaSrc) frame.src = frame.dataset.agendaSrc;
-        if (phone) document.getElementById("calendar-frame-wrap").classList.add("is-agenda");
-      })();
-    </script>
-
   </div>
 </section>
 

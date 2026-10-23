@@ -618,23 +618,17 @@ footer.site-footer a:hover { color: #fff; }
   display: block;
   background: #fff;
 }
-#brigade-calendar-upcoming:not([src]) { display: none; height: 0; }
-.calendar-frame-wrap.is-agenda iframe,
 .calendar-frame-wrap-agenda iframe {
-  height: 640px;
+  height: 560px;
 }
-.calendar-upcoming {
-  margin-bottom: 42px;
-}
-.calendar-upcoming .section-head { margin-bottom: 22px; }
+.calendar-month-head { margin-top: 42px; }
 @media (max-width: 900px) {
-  .calendar-frame-wrap iframe,
-  .calendar-frame-wrap.is-agenda iframe {
+  .calendar-frame-wrap iframe {
     height: min(78vh, 720px);
     min-height: 560px;
   }
   .calendar-frame-wrap-agenda iframe {
-    height: 640px;
+    height: 520px;
     min-height: 0;
   }
 }
