@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <title>捐贈申請書線上簽名｜臺東縣消防局</title>
@@ -32,6 +32,13 @@
   .msg { padding: 14px; border-radius: 10px; font-size: 16px; line-height: 1.6; }
   .ok { background: #e8f5e9; color: #1b5e20; } .err { background: #fdecea; color: #8a1c1c; } .info { background: #e8f0fe; color: #1a3d7c; }
   .hidden { display: none; }
+  #pv { margin-top: 12px; }
+  #pvPages { background: #525659; border-radius: 8px; padding: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #pvPages canvas { display: block; width: 100%; height: auto; margin: 0 auto 8px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); border-radius: 2px; touch-action: auto; }
+  #pvPages canvas:last-child { margin-bottom: 0; }
+  .pvbar { display: flex; gap: 10px; margin-top: 10px; }
+  .pvbar button, #viewBtn { background: #1a3d7c; color: #fff; }
+  #viewBtn { width: 100%; margin-top: 12px; }
   small.note { color: #6b7280; display: block; margin-top: 8px; font-size: 12.5px; line-height: 1.5; }
 </style>
 </head>
@@ -42,6 +49,17 @@
 </header>
 <main>
   <div id="stateMsg" class="card"><div class="msg info">載入中，請稍候…</div></div>
+
+  <div id="doneArea" class="card hidden">
+    <button type="button" id="viewBtn" class="hidden">📄 查看已簽名申請書</button>
+    <div id="pv" class="hidden">
+      <h2>已簽名申請書預覽</h2>
+      <div id="pvMsg" class="msg info">申請書載入中，請稍候…</div>
+      <div id="pvPages"></div>
+      <div class="pvbar"><button type="button" id="dlBtn" class="hidden">⬇ 下載 PDF</button></div>
+      <small class="note">可用兩指放大檢視。</small>
+    </div>
+  </div>
 
   <div id="signArea" class="hidden">
     <div class="card">
@@ -85,7 +103,11 @@ function showState(cls, text) { var m = $('stateMsg'); m.className = 'card'; m.i
 
 function render(d) {
   DATA = d;
-  if (!d || !d.ok) { showState(d && d.code === 'done' ? 'ok' : 'err', (d && d.msg) || '系統暫時無法開啟簽名頁，請稍後再試或聯絡承辦人。'); return; }
+  if (!d || !d.ok) {
+    showState(d && d.code === 'done' ? 'ok' : 'err', (d && d.msg) || '系統暫時無法開啟簽名頁，請稍後再試或聯絡承辦人。');
+    if (d && d.code === 'done') { $('doneArea').classList.remove('hidden'); $('viewBtn').classList.remove('hidden'); }
+    return;
+  }
   $('stateMsg').className = 'card hidden';
   var s = d.summary;
   var rows = [['案件編號', s.caseNo], ['申請人', s.applicant], ['捐贈品項', s.item], ['品項明細', s.detail],
@@ -168,11 +190,71 @@ function submit() {
                body: JSON.stringify({ sign: TOKEN, imageDataUrl: png, confirm: true }) })
     .then(function (r) { return r.json(); })
     .then(function (res) {
-      if (res && res.ok) { $('signArea').classList.add('hidden'); showState('ok', res.msg); window.scrollTo(0, 0); }
+      if (res && res.ok) { $('signArea').classList.add('hidden'); showState('ok', res.msg); $('doneArea').classList.remove('hidden'); window.scrollTo(0, 0); showPreview(); }
       else fail((res && res.msg) || '送出失敗，請再試一次。');
     })
     .catch(function () { fail('網路或系統錯誤，請再按一次送出。若一直失敗，請聯絡承辦人。'); });
 }
+// ---------- 已簽名申請書預覽（PDF.js，cdnjs） ----------
+var PDFJS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+var PDFJS_SRI = 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e';
+var PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+var pdfBytes = null, pdfName = '已簽名申請書.pdf', pdfLoading = false;
+function loadPdfJs() {
+  return new Promise(function (resolve, reject) {
+    if (window.pdfjsLib) return resolve(window.pdfjsLib);
+    var sc = document.createElement('script');
+    sc.src = PDFJS_SRC; sc.integrity = PDFJS_SRI; sc.crossOrigin = 'anonymous'; sc.referrerPolicy = 'no-referrer';
+    sc.onload = function () { if (window.pdfjsLib) { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER; resolve(window.pdfjsLib); } else reject(new Error('pdfjs')); };
+    sc.onerror = function () { reject(new Error('pdfjs')); };
+    document.head.appendChild(sc);
+  });
+}
+function b64ToBytes(b64) { var bin = atob(b64), n = bin.length, u = new Uint8Array(n); for (var i = 0; i < n; i++) u[i] = bin.charCodeAt(i); return u; }
+function pvSay(cls, t) { var m = $('pvMsg'); if (!t) { m.className = 'hidden'; return; } m.className = 'msg ' + cls; m.textContent = t; }
+function showPreview() {
+  if (pdfLoading) return;
+  $('viewBtn').classList.add('hidden'); $('pv').classList.remove('hidden');
+  if (pdfBytes) return;
+  pdfLoading = true; pvSay('info', '申請書載入中，請稍候…');
+  fetch(API + '?api=pdf&sign=' + encodeURIComponent(TOKEN), { method: 'GET', credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (!res || !res.ok || !res.base64) throw new Error((res && res.msg) || '暫時無法載入申請書，請稍後再試。');
+      pdfBytes = b64ToBytes(res.base64); pdfName = res.fileName || pdfName;
+      $('dlBtn').classList.remove('hidden');
+      return loadPdfJs().then(function (lib) { return renderPdf(lib, pdfBytes.slice()); })
+        .catch(function () { pvSay('err', '此手機無法直接顯示預覽，請按「下載 PDF」開啟。'); });
+    })
+    .catch(function (e) { pvSay('err', (e && e.message) || '暫時無法載入申請書，請稍後再試。'); $('viewBtn').classList.remove('hidden'); $('viewBtn').textContent = '↻ 重新載入申請書'; })
+    .then(function () { pdfLoading = false; });
+}
+function renderPdf(lib, data) {
+  return lib.getDocument({ data: data, cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/', cMapPacked: true, standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/' }).promise.then(function (doc) {
+    var box = $('pvPages'); box.innerHTML = '';
+    var cssW = Math.max(box.clientWidth - 16, 280), dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2.5);
+    var chain = Promise.resolve();
+    for (var i = 1; i <= doc.numPages; i++) (function (n) {
+      chain = chain.then(function () { return doc.getPage(n); }).then(function (page) {
+        var v1 = page.getViewport({ scale: 1 }), scale = cssW / v1.width * dpr, vp = page.getViewport({ scale: scale });
+        var cv = document.createElement('canvas'); cv.width = Math.floor(vp.width); cv.height = Math.floor(vp.height);
+        cv.setAttribute('aria-label', '申請書第 ' + n + ' 頁');
+        box.appendChild(cv);
+        return page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+      });
+    })(i);
+    return chain.then(function () { pvSay('', ''); box.setAttribute('data-pages', doc.numPages); });
+  });
+}
+function downloadPdf() {
+  if (!pdfBytes) return;
+  var url = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' }));
+  var a = document.createElement('a'); a.href = url; a.download = pdfName; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+}
+$('viewBtn').onclick = showPreview;
+$('dlBtn').onclick = downloadPdf;
 load();
 </script>
 </body>
