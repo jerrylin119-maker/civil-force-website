@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>捐贈申請書線上簽名｜臺東縣消防局</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: #f3f5f8; color: #1f2933; -webkit-text-size-adjust: 100%; }
+  header { background: #b71c1c; color: #fff; padding: 14px 16px; }
+  header h1 { margin: 0; font-size: 19px; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: .9; }
+  main { max-width: 640px; margin: 0 auto; padding: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .card h2 { font-size: 16px; margin: 0 0 10px; }
+  dl { margin: 0; display: grid; grid-template-columns: 6.5em 1fr; gap: 6px 8px; font-size: 15px; }
+  dt { color: #6b7280; } dd { margin: 0; word-break: break-all; }
+  .doc { font-size: 14.5px; line-height: 1.7; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px; }
+  .padwrap { position: relative; border: 2px dashed #9aa5b1; border-radius: 10px; background: #fff; touch-action: none; }
+  canvas { display: block; width: 100%; height: 220px; touch-action: none; border-radius: 10px; }
+  .hint { position: absolute; left: 0; right: 0; top: 45%; text-align: center; color: #b0b8c1; font-size: 18px; pointer-events: none; }
+  .line { position: absolute; left: 6%; right: 6%; bottom: 46px; border-bottom: 1px solid #d5dbe1; pointer-events: none; }
+  .row { display: flex; gap: 10px; margin-top: 10px; }
+  button { font-size: 17px; padding: 13px 10px; border-radius: 10px; border: 0; flex: 1; font-family: inherit; }
+  .sec { background: #e5e7eb; color: #1f2933; }
+  .pri { background: #b71c1c; color: #fff; font-weight: bold; width: 100%; margin-top: 12px; }
+  button:disabled { opacity: .5; }
+  label.chk { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; margin-top: 12px; }
+  label.chk input { width: 22px; height: 22px; flex: none; margin-top: 1px; }
+  .msg { padding: 14px; border-radius: 10px; font-size: 16px; line-height: 1.6; }
+  .ok { background: #e8f5e9; color: #1b5e20; } .err { background: #fdecea; color: #8a1c1c; } .info { background: #e8f0fe; color: #1a3d7c; }
+  .hidden { display: none; }
+  small.note { color: #6b7280; display: block; margin-top: 8px; font-size: 12.5px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>捐贈申請書　線上簽名</h1>
+  <p>臺東縣消防局</p>
+</header>
+<main>
+  <div id="stateMsg" class="card"><div class="msg info">載入中，請稍候…</div></div>
+
+  <div id="signArea" class="hidden">
+    <div class="card">
+      <h2>申請內容</h2>
+      <dl id="sum"></dl>
+    </div>
+    <div class="card">
+      <h2>捐贈申請書</h2>
+      <div class="doc">
+        <div><b>受文者：</b>臺東縣消防局</div>
+        <div><b>主　旨：</b><span id="docSubject"></span></div>
+        <div><b>說　明：</b><span id="docBody"></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>請在下方框內用手指簽名</h2>
+      <div class="padwrap" id="padwrap">
+        <canvas id="pad"></canvas>
+        <div class="line"></div>
+        <div class="hint" id="hint">在此簽名</div>
+      </div>
+      <div class="row">
+        <button type="button" class="sec" id="undoBtn">↶ 復原一筆</button>
+        <button type="button" class="sec" id="clearBtn">✕ 清除重簽</button>
+      </div>
+      <small class="note">提示：手機橫放可加大簽名空間（橫放後請按「清除重簽」）。</small>
+      <label class="chk"><input type="checkbox" id="agree"><span>本人確認上述捐贈申請內容無誤，同意以本電子簽名簽署捐贈申請書。</span></label>
+      <button type="button" class="pri" id="submitBtn">送出簽名</button>
+      <div id="submitMsg" class="hidden" style="margin-top:12px"></div>
+    </div>
+  </div>
+</main>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbz2qkmWV94CaEkpFzBkZ-5MXzxy75O5fdMbaxME8xP7QnZHDWMAocd38XOMa9Hqb0bbHw/exec';
+var TOKEN = (new URLSearchParams(location.search).get('sign') || '').trim();
+var DATA = null;
+var strokes = [], cur = null, canvas, ctx, ratio = 1;
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function showState(cls, text) { var m = $('stateMsg'); m.className = 'card'; m.innerHTML = '<div class="msg ' + cls + '">' + esc(text) + '</div>'; }
+
+function render(d) {
+  DATA = d;
+  if (!d || !d.ok) { showState(d && d.code === 'done' ? 'ok' : 'err', (d && d.msg) || '系統暫時無法開啟簽名頁，請稍後再試或聯絡承辦人。'); return; }
+  $('stateMsg').className = 'card hidden';
+  var s = d.summary;
+  var rows = [['案件編號', s.caseNo], ['申請人', s.applicant], ['捐贈品項', s.item], ['品項明細', s.detail],
+              ['總金額', s.amount ? 'NT$ ' + s.amount + ' 元' : ''], ['受贈單位', s.unit], ['聯絡人', s.contact], ['申請日期', s.date]];
+  $('sum').innerHTML = rows.filter(function (r) { return r[1]; }).map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
+  $('docSubject').textContent = s.subject; $('docBody').textContent = s.body;
+  $('signArea').classList.remove('hidden');
+  initPad();
+}
+function load() {
+  if (!/^[0-9a-f]{32,}$/.test(TOKEN)) { render({ ok: false, code: 'invalid', msg: '這個簽名連結無效或已更新。請向承辦人索取最新的簽名連結。' }); return; }
+  fetch(API + '?api=case&sign=' + encodeURIComponent(TOKEN), { method: 'GET', credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(render)
+    .catch(function () { showState('err', '網路連線失敗，請確認網路後重新整理本頁。'); });
+}
+function initPad() {
+  canvas = $('pad'); ctx = canvas.getContext('2d');
+  resize();
+  window.addEventListener('resize', function () { var keep = strokes.length; resize(); if (keep) redraw(); });
+  canvas.addEventListener('pointerdown', down);
+  canvas.addEventListener('pointermove', move);
+  canvas.addEventListener('pointerup', up);
+  canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('pointerleave', up);
+  ['touchstart', 'touchmove'].forEach(function (ev) { canvas.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+  $('clearBtn').onclick = function () { strokes = []; redraw(); };
+  $('undoBtn').onclick = function () { strokes.pop(); redraw(); };
+  $('submitBtn').onclick = submit;
+}
+function resize() {
+  ratio = Math.max(window.devicePixelRatio || 1, 1);
+  var r = canvas.getBoundingClientRect();
+  canvas.width = Math.round(r.width * ratio); canvas.height = Math.round(r.height * ratio);
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  redraw();
+}
+function pt(e) { var r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, p: e.pressure || 0.5 }; }
+function down(e) { e.preventDefault(); try { canvas.setPointerCapture(e.pointerId); } catch (x) {} cur = [pt(e)]; strokes.push(cur); redraw(); }
+function move(e) { if (!cur) return; e.preventDefault(); var ev = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]; if (!ev.length) ev = [e]; ev.forEach(function (x) { cur.push(pt(x)); }); redraw(); }
+function up() { cur = null; }
+function drawStroke(c, st, scale) {
+  c.lineCap = 'round'; c.lineJoin = 'round'; c.strokeStyle = '#0b1f4d'; c.fillStyle = '#0b1f4d';
+  c.lineWidth = 2.8 * scale;
+  if (st.length === 1) { c.beginPath(); c.arc(st[0].x * scale, st[0].y * scale, 1.6 * scale, 0, Math.PI * 2); c.fill(); return; }
+  c.beginPath(); c.moveTo(st[0].x * scale, st[0].y * scale);
+  for (var i = 1; i < st.length - 1; i++) {
+    var mx = (st[i].x + st[i + 1].x) / 2, my = (st[i].y + st[i + 1].y) / 2;
+    c.quadraticCurveTo(st[i].x * scale, st[i].y * scale, mx * scale, my * scale);
+  }
+  var l = st[st.length - 1]; c.lineTo(l.x * scale, l.y * scale); c.stroke();
+}
+function redraw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  strokes.forEach(function (st) { drawStroke(ctx, st, 1); });
+  $('hint').style.display = strokes.length ? 'none' : '';
+}
+// 依筆跡範圍裁切，輸出透明背景 PNG
+function exportPng() {
+  var minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9, n = 0;
+  strokes.forEach(function (st) { st.forEach(function (p) { n++; minX = Math.min(minX, p.x); minY = Math.min(minY, p.y); maxX = Math.max(maxX, p.x); maxY = Math.max(maxY, p.y); }); });
+  if (n < 8 || (maxX - minX < 15 && maxY - minY < 15)) return null;
+  var pad = 8, scale = 2;
+  var w = Math.ceil((maxX - minX + pad * 2) * scale), h = Math.ceil((maxY - minY + pad * 2) * scale);
+  var out = document.createElement('canvas'); out.width = w; out.height = h;
+  var c = out.getContext('2d'); c.translate((pad - minX) * scale, (pad - minY) * scale);
+  strokes.forEach(function (st) { drawStroke(c, st, scale); });
+  return out.toDataURL('image/png');
+}
+function submit() {
+  var m = $('submitMsg');
+  function say(cls, t) { m.className = 'msg ' + cls; m.textContent = t; }
+  if (!$('agree').checked) { say('err', '請先勾選確認內容無誤。'); return; }
+  var png = exportPng();
+  if (!png) { say('err', '請先在框內完整簽名。'); return; }
+  $('submitBtn').disabled = true; $('clearBtn').disabled = true; $('undoBtn').disabled = true;
+  say('info', '送出中，正在產生已簽名的申請書，約需 10～30 秒，請勿關閉畫面…');
+  function fail(t) { say('err', t); $('submitBtn').disabled = false; $('clearBtn').disabled = false; $('undoBtn').disabled = false; }
+  fetch(API, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+               body: JSON.stringify({ sign: TOKEN, imageDataUrl: png, confirm: true }) })
+    .then(function (r) { return r.json(); })
+    .then(function (res) {
+      if (res && res.ok) { $('signArea').classList.add('hidden'); showState('ok', res.msg); window.scrollTo(0, 0); }
+      else fail((res && res.msg) || '送出失敗，請再試一次。');
+    })
+    .catch(function () { fail('網路或系統錯誤，請再按一次送出。若一直失敗，請聯絡承辦人。'); });
+}
+load();
+</script>
+</body>
+</html>
